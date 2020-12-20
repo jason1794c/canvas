@@ -26,16 +26,18 @@ window.addEventListener('resize', () => {
     canvas.height = window.innerHeight;
 })
 
-function Circle(x, y, dx, dy, radius, r, g, b) {
+const friction = 0.90;
+const gravity = 0.5;
+
+function Circle(x, y, vx, vy, radius, r, g, b) {
     this.x = x;
     this.y = y;
-    this.dx = dx;
-    this.dy = dy;
     this.radius = radius;
     this.r = r;
     this.g = g;
-    this.b = b
-    this.minRadius = radius;
+    this.b = b;
+    this.vy = vy;
+    this.vx = vx;
 
     this.draw = () => {
         c.beginPath();
@@ -45,33 +47,32 @@ function Circle(x, y, dx, dy, radius, r, g, b) {
         c.strokeStyle = `rgba(${this.r}, ${this.g}, ${this.b})`;
         c.stroke();
     }
+    
 
     this.update = () => {
         this.draw();
 
         // x-velocity conditional
-        if (this.x + this.radius > innerWidth || this.x - this.radius < 0) {
-            this.dx = -this.dx;
+        if (this.x + this.radius + this.vx > innerWidth || this.x - this.radius < 0) {
+                this.vx = -this.vx * friction;   
         }
-        
-        // y-velocity conditional
-        if (this.y + this.radius > innerHeight || this.y - this.radius < 0) {
-            this.dy = -this.dy;
+
+        // Gravity and bounce
+        if (this.y + this.radius + this.vy > innerHeight) {
+            this.vy = -this.vy * friction;
+        } else {
+            this.vy += gravity; // Adding gravity of 0.5
         }
-        
-        this.x += this.dx;
-        this.y += this.dy;      
+
+        this.y += this.vy;
+        this.x += this.vx;
 
         // Mouse interactivity
-        if (mouse.x - this.x < 100 && mouse.x - this.x > -100 &&
-            mouse.y - this.y < 100 && mouse.y - this.y > -100) {
-                if (this.radius < maxRadius) {
-                    this.radius += 2;
-                } 
-        } else if (this.radius > this.minRadius){
-            this.radius -= 1;
-        }
-
+        if (mouse.x - this.x < 50 && mouse.x - this.x > -50 &&
+            mouse.y - this.y < 50 && mouse.y - this.y > -50) {
+                this.vy = -(Math.abs(this.vy + 10));
+                this.vx = -(this.vx + 5);
+            }
     }
 }
 
@@ -79,18 +80,19 @@ let circleArray = [];
 
 // Initialize the circles
 const init = () => {
-    for (let i = 0; i < 800; i++) {
+    for (let i = 0; i < 100; i++) {
         let radius = Math.random() * 30 + 5;
         let x = Math.random()*(innerWidth - radius * 2) + radius;
         let y = Math.random()*(innerHeight - radius * 2) + radius;
-        let dx = (Math.random() - 0.5)*10; // x-velocity
-        let dy = (Math.random() - 0.5)*10; // y-velocity
+        let vy = Math.random() * 5;
+        let vx = (Math.random() - 0.5) * 10;
+
 
         let r = Math.random()*255;
         let g = Math.random()*255;
         let b = Math.random()*255;
 
-        circleArray.push(new Circle(x, y, dx, dy, radius, r, g, b)) // Creating a new circle after very FOR loop
+        circleArray.push(new Circle(x, y, vx, vy, radius, r, g, b)) // Creating a new circle after very FOR loop
     }
 }
 
