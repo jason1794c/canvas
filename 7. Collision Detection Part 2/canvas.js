@@ -163,7 +163,7 @@ function Circle(x, y, radius, color) {
         };
 
         // Mouse collision detection
-        if (distance(mouse.x, mouse.y, this.x, this.y) < 100 && this.opacity <= 0.2) {
+        if (distance(mouse.x, mouse.y, this.x, this.y) < 100 && this.opacity <= 0.7) {
             this.opacity += 0.02;
         } else if (this.opacity > 0) {
             this.opacity -= 0.02;
@@ -181,7 +181,7 @@ let circles;
 const init = () => {
     circles = [];
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 300; i++) {
         const radius = 20;
         let x = randomIntFromRange(radius, canvas.width - radius);
         let y = randomIntFromRange(radius, canvas.height - radius);
